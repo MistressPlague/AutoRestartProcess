@@ -1,4 +1,4 @@
-﻿using Microsoft.Win32;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -200,7 +200,7 @@ namespace Auto_Restart_Process
                         {
                             FileName = textBox1.Text,
                             WorkingDirectory = Path.GetDirectoryName(textBox1.Text) ?? Environment.CurrentDirectory,
-                            Arguments = textBox2.Text,
+                            Arguments = textBox2.Text.Replace("%APPDIR%", Path.GetDirectoryName(textBox1.Text) ?? Environment.CurrentDirectory).Replace("%TIME%", DateTime.Now.ToString("dd MM ss tt")),
                             CreateNoWindow = checkBox3.Checked,
                             WindowStyle = (ProcessWindowStyle)comboBox1.SelectedIndex
                         };
