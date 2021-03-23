@@ -192,7 +192,10 @@ namespace Auto_Restart_Process
                 RestartWorker.RunWorkerAsync();
             }
 
-            JsonConfig.SaveConfig(Config);
+            if (HasInit)
+            {
+                JsonConfig.SaveConfig(Config);
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -212,8 +215,13 @@ namespace Auto_Restart_Process
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
-            JsonConfig.SaveConfig(Config);
+            if (HasInit)
+            {
+                JsonConfig.SaveConfig(Config);
+            }
         }
+
+        private bool HasInit = false;
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -222,11 +230,16 @@ namespace Auto_Restart_Process
             comboBox1.SelectedIndex = 0;
 
             JsonConfig.LoadConfig(ref Config);
+
+            HasInit = true;
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
         {
-            JsonConfig.SaveConfig(Config);
+            if (HasInit)
+            {
+                JsonConfig.SaveConfig(Config);
+            }
         }
 
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
@@ -242,7 +255,10 @@ namespace Auto_Restart_Process
                 rk.DeleteValue(Application.ExecutablePath, false);
             }
 
-            JsonConfig.SaveConfig(Config);
+            if (HasInit)
+            {
+                JsonConfig.SaveConfig(Config);
+            }
         }
 
         public void Log(string text)
@@ -314,22 +330,34 @@ namespace Auto_Restart_Process
 
         private void textBox2_TextChanged(object sender, EventArgs e)
         {
-            JsonConfig.SaveConfig(Config);
+            if (HasInit)
+            {
+                JsonConfig.SaveConfig(Config);
+            }
         }
 
         private void checkBox3_CheckedChanged(object sender, EventArgs e)
         {
-            JsonConfig.SaveConfig(Config);
+            if (HasInit)
+            {
+                JsonConfig.SaveConfig(Config);
+            }
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            JsonConfig.SaveConfig(Config);
+            if (HasInit)
+            {
+                JsonConfig.SaveConfig(Config);
+            }
         }
 
         private void AutoRestartForm_LocationChanged(object sender, EventArgs e)
         {
-            JsonConfig.SaveConfig(Config);
+            if (HasInit)
+            {
+                JsonConfig.SaveConfig(Config);
+            }
         }
     }
 }
