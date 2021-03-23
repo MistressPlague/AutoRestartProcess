@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Reflection;
@@ -36,7 +37,7 @@ namespace Libraries
         {
             if (DirToConfig == null)
             {
-                DirToConfig = Environment.CurrentDirectory + "\\" + Assembly.GetExecutingAssembly().GetName().Name + ".json";
+                DirToConfig = Environment.CurrentDirectory + "\\" + Process.GetCurrentProcess().ProcessName + ".json";
             }
 
             if (type == null)
@@ -79,7 +80,7 @@ namespace Libraries
         {
             if (DirToConfig == null)
             {
-                DirToConfig = Environment.CurrentDirectory + "\\" + Assembly.GetExecutingAssembly().GetName().Name + ".json";
+                DirToConfig = Environment.CurrentDirectory + "\\" + Process.GetCurrentProcess().ProcessName + ".json";
             }
 
             if (type == null)
