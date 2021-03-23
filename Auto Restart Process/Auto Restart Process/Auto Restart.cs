@@ -246,13 +246,16 @@ namespace Auto_Restart_Process
         {
             RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
-            if (checkBox2.Checked)
+            if (rk != null)
             {
-                rk.SetValue(Application.ExecutablePath, "\"" + Application.ExecutablePath + "\"");
-            }
-            else
-            {
-                rk.DeleteValue(Application.ExecutablePath, false);
+                if (checkBox2.Checked)
+                {
+                    rk.SetValue(Application.ExecutablePath, "\"" + Application.ExecutablePath + "\"");
+                }
+                else
+                {
+                    rk.DeleteValue(Application.ExecutablePath, false);
+                }
             }
 
             if (HasInit)
@@ -261,6 +264,7 @@ namespace Auto_Restart_Process
             }
         }
 
+        // ReSharper disable once MethodNameNotMeaningful
         public void Log(string text)
         {
             LogBox.AppendText("[" + DateTime.Now.ToString("hh:MM:ss tt") + "] " + text + "\r\n");
@@ -287,11 +291,23 @@ namespace Auto_Restart_Process
                 {
                     if (TimePassed.ElapsedMilliseconds >= (long)numericUpDown1.Value)
                     {
+                        var Processes = Process.GetProcessesByName((Path.GetFileName(textBox1.Text) ?? "UnknownFileName")
+                            .Replace((Path.GetExtension(textBox1.Text) ?? "UnknownExtension"), ""));
+
+                        if (Processes.Length > 0)
+                        {
+                            Proc = Processes[0];
+
+                            Log("Existing Process Found!");
+
+                            goto AlreadyStarted;
+                        }
+
                         Log("Restarting!");
 
                         ProcessStartInfo Info = new ProcessStartInfo
                         {
-                            FileName = textBox1.Text,
+                            FileName = textBox1.Text ?? "",
                             WorkingDirectory = Path.GetDirectoryName(textBox1.Text) ?? Environment.CurrentDirectory,
                             Arguments = textBox2.Text.Replace("%APPDIR%", Path.GetDirectoryName(textBox1.Text) ?? Environment.CurrentDirectory).Replace("%TIME%", DateTime.Now.ToString("dd MM ss tt")),
                             CreateNoWindow = checkBox3.Checked,
@@ -301,6 +317,8 @@ namespace Auto_Restart_Process
                         Proc = Process.Start(Info);
 
                         Log("Process Started!");
+
+                    AlreadyStarted:
 
                         Proc?.WaitForExit();
 
