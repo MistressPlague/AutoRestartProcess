@@ -1,15 +1,11 @@
-﻿using Microsoft.Win32;
-using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Security.Principal;
-using System.Text;
-using System.Windows.Forms;
 using Libraries;
+using Microsoft.Win32;
+using System;
+using System.Diagnostics;
+using System.Drawing;
+using System.IO;
+using System.Security.Principal;
+using System.Windows.Forms;
 
 namespace Auto_Restart_Process
 {
@@ -17,9 +13,11 @@ namespace Auto_Restart_Process
     {
         public AutoRestartForm()
         {
-            InitializeComponent();
-
             Instance = this;
+
+            JsonConfig.LoadConfig(ref Config);
+
+            InitializeComponent();
         }
 
         public static AutoRestartForm Instance;
@@ -31,43 +29,129 @@ namespace Auto_Restart_Process
             public bool IsAutoRestarting
             {
                 get => Instance.checkBox1.Checked;
-                set => Instance.checkBox1.Checked = value;
+                set
+                {
+                    try
+                    {
+                        Instance.checkBox1.Checked = value;
+                    }
+                    catch
+                    {
+
+                    }
+                }
             }
 
             public decimal Interval
             {
                 get => Instance.numericUpDown1.Value;
-                set => Instance.numericUpDown1.Value = value;
+                set
+                {
+                    try
+                    {
+                        Instance.numericUpDown1.Value = value;
+                    }
+                    catch
+                    {
+
+                    }
+                }
             }
 
             public bool RunOnStartup
             {
                 get => Instance.checkBox2.Checked;
-                set => Instance.checkBox2.Checked = value;
+                set
+                {
+                    try
+                    {
+                        Instance.checkBox2.Checked = value;
+                    }
+                    catch
+                    {
+
+                    }
+                }
             }
 
             public string MaintainThis
             {
                 get => Instance.textBox1.Text;
-                set => Instance.textBox1.Text = value;
+                set
+                {
+                    try
+                    {
+                        Instance.textBox1.Text = value;
+                    }
+                    catch
+                    {
+
+                    }
+                }
             }
 
             public string Arguments
             {
                 get => Instance.textBox2.Text;
-                set => Instance.textBox2.Text = value;
+                set
+                {
+                    try
+                    {
+                        Instance.textBox2.Text = value;
+                    }
+                    catch
+                    {
+
+                    }
+                }
             }
 
             public bool CreateNoWindow
             {
                 get => Instance.checkBox3.Checked;
-                set => Instance.checkBox3.Checked = value;
+                set
+                {
+                    try
+                    {
+                        Instance.checkBox3.Checked = value;
+                    }
+                    catch
+                    {
+
+                    }
+                }
             }
 
             public int WindowStartState
             {
                 get => Instance.comboBox1.SelectedIndex;
-                set => Instance.comboBox1.SelectedIndex = value;
+                set
+                {
+                    try
+                    {
+                        Instance.comboBox1.SelectedIndex = value;
+                    }
+                    catch
+                    {
+
+                    }
+                }
+            }
+
+            public Point Pos
+            {
+                get => Instance.Location;
+                set
+                {
+                    try
+                    {
+                        Instance.Location = value;
+                    }
+                    catch
+                    {
+
+                    }
+                }
             }
         }
 
@@ -103,14 +187,14 @@ namespace Auto_Restart_Process
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBox1.Checked)
+            if (checkBox1.Checked && !RestartWorker.IsBusy)
             {
                 RestartWorker.RunWorkerAsync();
             }
 
             JsonConfig.SaveConfig(Config);
         }
-        
+
         private void button1_Click(object sender, EventArgs e)
         {
             try
@@ -134,6 +218,8 @@ namespace Auto_Restart_Process
         private void Form1_Load(object sender, EventArgs e)
         {
             IsUserAdministrator();
+
+            comboBox1.SelectedIndex = 0;
 
             JsonConfig.LoadConfig(ref Config);
         }
@@ -167,6 +253,8 @@ namespace Auto_Restart_Process
         private Stopwatch TimePassed = new Stopwatch();
 
         private Process Proc;
+
+        private int RestartCount = 0;
 
         private void RestartWorker_DoWork(object sender, System.ComponentModel.DoWorkEventArgs e)
         {
@@ -203,6 +291,8 @@ namespace Auto_Restart_Process
                         Log("Process Died" + (checkBox1.Checked ? " - Restarting Soon" : "") + "!");
 
                         TimePassed.Restart();
+
+                        label5.Text = "Restart Count: " + RestartCount++;
                     }
                 }
             }
@@ -233,6 +323,11 @@ namespace Auto_Restart_Process
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            JsonConfig.SaveConfig(Config);
+        }
+
+        private void AutoRestartForm_LocationChanged(object sender, EventArgs e)
         {
             JsonConfig.SaveConfig(Config);
         }
