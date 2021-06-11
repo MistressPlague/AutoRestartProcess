@@ -271,6 +271,7 @@ namespace Auto_Restart_Process
         }
 
         private Stopwatch TimePassed = new Stopwatch();
+        private Stopwatch HungTimePassed = new Stopwatch();
 
         private Process Proc;
 
@@ -319,14 +320,34 @@ namespace Auto_Restart_Process
                         Log("Process Started!");
 
                     AlreadyStarted:
+                        var HungTooLong = false;
+                        
+                        while (Proc != null && !Proc.HasExited && !HungTooLong)
+                        {
+                            if (HungTimePassed.ElapsedMilliseconds >= numericUpDown2.Value)
+                            {
+                                HungTooLong = true;
+                                Proc.Kill();
+                            }
 
-                        Proc?.WaitForExit();
+                            if (!Proc.Responding)
+                            {
+                                HungTimePassed.Start();
+                            }
+                            else
+                            {
+                                HungTimePassed.Reset();
+                            }
+                        }
 
                         Log("Process Died" + (checkBox1.Checked ? " - Restarting Soon" : "") + "!");
 
                         TimePassed.Restart();
 
-                        label5.Text = "Restart Count: " + RestartCount++;
+                        if (checkBox1.Checked)
+                        {
+                            label5.Text = "Restart Count: " + RestartCount++;
+                        }
                     }
                 }
             }
