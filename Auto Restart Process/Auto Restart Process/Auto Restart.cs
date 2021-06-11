@@ -449,5 +449,13 @@ namespace Auto_Restart_Process
                 JsonConfig.SaveConfig(Config);
             }
         }
+
+        private void NotRespondingPref_CheckedChanged(object sender, EventArgs e)
+        {
+            if (HasInit)
+            {
+                JsonConfig.SaveConfig(Config);
+            }
+        }
     }
 }
