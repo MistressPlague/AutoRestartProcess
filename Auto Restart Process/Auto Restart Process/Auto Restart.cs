@@ -368,7 +368,12 @@ namespace Auto_Restart_Process
                                 break;
                             }
 
-                            if (!Proc.HasExited && !Proc.Responding)
+                            if (Proc.HasExited)
+                            {
+                                break;
+                            }
+
+                            if (!Proc.Responding)
                             {
                                 HungTimePassed.Start();
                             }
