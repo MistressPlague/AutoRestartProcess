@@ -1,4 +1,4 @@
-﻿namespace Auto_Restart_Process
+namespace Auto_Restart_Process
 {
     partial class AutoRestartForm
     {
@@ -46,8 +46,13 @@
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label1 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.NotRespondingPref = new System.Windows.Forms.CheckBox();
+            this.numericUpDown2 = new System.Windows.Forms.NumericUpDown();
+            this.label6 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).BeginInit();
             this.SuspendLayout();
             // 
             // textBox1
@@ -76,7 +81,7 @@
             // button1
             // 
             this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Location = new System.Drawing.Point(363, 45);
+            this.button1.Location = new System.Drawing.Point(363, 46);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(92, 23);
             this.button1.TabIndex = 3;
@@ -141,7 +146,7 @@
             // button2
             // 
             this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button2.Location = new System.Drawing.Point(85, 44);
+            this.button2.Location = new System.Drawing.Point(85, 45);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(92, 23);
             this.button2.TabIndex = 9;
@@ -177,11 +182,11 @@
             // 
             this.LogBox.BackColor = System.Drawing.Color.Black;
             this.LogBox.ForeColor = System.Drawing.Color.Magenta;
-            this.LogBox.Location = new System.Drawing.Point(10, 138);
+            this.LogBox.Location = new System.Drawing.Point(10, 180);
             this.LogBox.Multiline = true;
             this.LogBox.Name = "LogBox";
             this.LogBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.LogBox.Size = new System.Drawing.Size(584, 133);
+            this.LogBox.Size = new System.Drawing.Size(584, 91);
             this.LogBox.TabIndex = 12;
             // 
             // checkBox3
@@ -197,6 +202,9 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label6);
+            this.groupBox1.Controls.Add(this.numericUpDown2);
+            this.groupBox1.Controls.Add(this.NotRespondingPref);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.comboBox1);
             this.groupBox1.Controls.Add(this.textBox1);
@@ -208,7 +216,7 @@
             this.groupBox1.Controls.Add(this.textBox2);
             this.groupBox1.Location = new System.Drawing.Point(129, 5);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(465, 127);
+            this.groupBox1.Size = new System.Drawing.Size(465, 169);
             this.groupBox1.TabIndex = 14;
             this.groupBox1.TabStop = false;
             // 
@@ -240,12 +248,60 @@
             this.comboBox1.TabIndex = 14;
             this.comboBox1.SelectedIndexChanged += new System.EventHandler(this.comboBox1_SelectedIndexChanged);
             // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(7, 161);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(84, 13);
+            this.label5.TabIndex = 15;
+            this.label5.Text = "Restart Count: 0";
+            // 
+            // NotRespondingPref
+            // 
+            this.NotRespondingPref.AutoSize = true;
+            this.NotRespondingPref.Location = new System.Drawing.Point(9, 124);
+            this.NotRespondingPref.Name = "NotRespondingPref";
+            this.NotRespondingPref.Size = new System.Drawing.Size(262, 17);
+            this.NotRespondingPref.TabIndex = 16;
+            this.NotRespondingPref.Text = "Kill And Restart On Not Responding For Too Long";
+            this.NotRespondingPref.UseVisualStyleBackColor = true;
+            // 
+            // numericUpDown2
+            // 
+            this.numericUpDown2.BackColor = System.Drawing.Color.Black;
+            this.numericUpDown2.ForeColor = System.Drawing.Color.Magenta;
+            this.numericUpDown2.Location = new System.Drawing.Point(143, 142);
+            this.numericUpDown2.Maximum = new decimal(new int[] {
+            999999999,
+            0,
+            0,
+            0});
+            this.numericUpDown2.Name = "numericUpDown2";
+            this.numericUpDown2.Size = new System.Drawing.Size(121, 20);
+            this.numericUpDown2.TabIndex = 16;
+            this.numericUpDown2.Value = new decimal(new int[] {
+            5000,
+            0,
+            0,
+            0});
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 144);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(136, 13);
+            this.label6.TabIndex = 16;
+            this.label6.Text = "Max Not Responding Time:";
+            // 
             // AutoRestartForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(607, 283);
+            this.ClientSize = new System.Drawing.Size(604, 282);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.LogBox);
             this.Controls.Add(this.checkBox2);
@@ -257,12 +313,14 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "AutoRestartForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
             this.Text = "Auto Restart Process";
             this.Load += new System.EventHandler(this.Form1_Load);
+            this.LocationChanged += new System.EventHandler(this.AutoRestartForm_LocationChanged);
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -287,6 +345,10 @@
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.CheckBox NotRespondingPref;
+        private System.Windows.Forms.NumericUpDown numericUpDown2;
+        private System.Windows.Forms.Label label6;
     }
 }
 
