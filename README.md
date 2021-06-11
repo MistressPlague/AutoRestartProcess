@@ -1,7 +1,7 @@
 # AutoRestartProcess
 A Pretty Simple Yet Comprehensive Tool For Restarting Processes If They Die - Useful For Servers
 # Screenshot
-![image](https://user-images.githubusercontent.com/36628963/112166535-9fd25500-8be7-11eb-9907-04cff7983f0c.png)
+![image](https://user-images.githubusercontent.com/36628963/121628317-de521000-ca70-11eb-8f90-c5ccf672bb54.png)
 # Tips
  - You Can Run Multiple Of These By Simply Copying And Pasting The Exe - The Saved Config Is The Exe's Name.
  - Some Programs May Not Play Nice With Non-Normal Window Start States.
