@@ -28,7 +28,7 @@ namespace Auto_Restart_Process
         {
             public bool IsAutoRestarting
             {
-                get => Instance.checkBox1.Checked;
+                get => Instance != null && Instance.checkBox1.Checked;
                 set
                 {
                     try
@@ -153,6 +153,38 @@ namespace Auto_Restart_Process
                     }
                 }
             }
+
+            public bool KillIfNotResponding
+            {
+                get => Instance.NotRespondingPref.Checked;
+                set
+                {
+                    try
+                    {
+                        Instance.NotRespondingPref.Checked = value;
+                    }
+                    catch
+                    {
+
+                    }
+                }
+            }
+
+            public decimal NotRespondingTime
+            {
+                get => Instance.numericUpDown2.Value;
+                set
+                {
+                    try
+                    {
+                        Instance.numericUpDown2.Value = value;
+                    }
+                    catch
+                    {
+
+                    }
+                }
+            }
         }
 
         public static bool IsAdmin = false;
@@ -267,7 +299,14 @@ namespace Auto_Restart_Process
         // ReSharper disable once MethodNameNotMeaningful
         public void Log(string text)
         {
-            LogBox.AppendText("[" + DateTime.Now.ToString("hh:MM:ss tt") + "] " + text + "\r\n");
+            try
+            {
+                LogBox.AppendText("[" + DateTime.Now.ToString("hh:MM:ss tt") + "] " + text + "\r\n");
+            }
+            catch
+            {
+
+            }
         }
 
         private Stopwatch TimePassed = new Stopwatch();
@@ -320,17 +359,16 @@ namespace Auto_Restart_Process
                         Log("Process Started!");
 
                     AlreadyStarted:
-                        var HungTooLong = false;
-                        
-                        while (Proc != null && !Proc.HasExited && !HungTooLong)
+                        while (Proc != null && !Proc.HasExited)
                         {
                             if (HungTimePassed.ElapsedMilliseconds >= numericUpDown2.Value)
                             {
-                                HungTooLong = true;
+                                HungTimePassed.Reset();
                                 Proc.Kill();
+                                break;
                             }
 
-                            if (!Proc.Responding)
+                            if (!Proc.HasExited && !Proc.Responding)
                             {
                                 HungTimePassed.Start();
                             }
@@ -392,6 +430,14 @@ namespace Auto_Restart_Process
         }
 
         private void AutoRestartForm_LocationChanged(object sender, EventArgs e)
+        {
+            if (HasInit)
+            {
+                JsonConfig.SaveConfig(Config);
+            }
+        }
+
+        private void numericUpDown2_ValueChanged(object sender, EventArgs e)
         {
             if (HasInit)
             {
