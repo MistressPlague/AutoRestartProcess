@@ -276,7 +276,7 @@ namespace Auto_Restart_Process
 
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
-            RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+            var rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
             if (rk != null)
             {
@@ -345,11 +345,11 @@ namespace Auto_Restart_Process
 
                         Log("Restarting!");
 
-                        ProcessStartInfo Info = new ProcessStartInfo
+                        var Info = new ProcessStartInfo
                         {
                             FileName = textBox1.Text ?? "",
                             WorkingDirectory = Path.GetDirectoryName(textBox1.Text) ?? Environment.CurrentDirectory,
-                            Arguments = textBox2.Text.Replace("%APPDIR%", Path.GetDirectoryName(textBox1.Text) ?? Environment.CurrentDirectory).Replace("%TIME%", DateTime.Now.ToString("dd MM ss tt")),
+                            Arguments = textBox2.Text.Replace("%APPDIR%", Path.GetDirectoryName(textBox1.Text) ?? Environment.CurrentDirectory).Replace("%TIME%", DateTime.Now.ToString("dd MM yyyy - hh mm ss tt")),
                             CreateNoWindow = checkBox3.Checked,
                             WindowStyle = (ProcessWindowStyle)comboBox1.SelectedIndex
                         };
@@ -361,11 +361,14 @@ namespace Auto_Restart_Process
                     AlreadyStarted:
                         while (Proc != null && !Proc.HasExited)
                         {
-                            if (HungTimePassed.ElapsedMilliseconds >= numericUpDown2.Value)
+                            if (NotRespondingPref.Checked)
                             {
-                                HungTimePassed.Reset();
-                                Proc.Kill();
-                                break;
+                                if (HungTimePassed.ElapsedMilliseconds >= numericUpDown2.Value)
+                                {
+                                    HungTimePassed.Reset();
+                                    Proc.Kill();
+                                    break;
+                                }
                             }
 
                             if (Proc.HasExited)
@@ -373,13 +376,16 @@ namespace Auto_Restart_Process
                                 break;
                             }
 
-                            if (!Proc.Responding)
+                            if (NotRespondingPref.Checked)
                             {
-                                HungTimePassed.Start();
-                            }
-                            else
-                            {
-                                HungTimePassed.Reset();
+                                if (!Proc.Responding)
+                                {
+                                    HungTimePassed.Start();
+                                }
+                                else
+                                {
+                                    HungTimePassed.Reset();
+                                }
                             }
                         }
 
@@ -389,7 +395,9 @@ namespace Auto_Restart_Process
 
                         if (checkBox1.Checked)
                         {
-                            label5.Text = "Restart Count: " + RestartCount++;
+                            RestartCount++;
+
+                            label5.Text = "Restart Count: " + RestartCount;
                         }
                     }
                 }
