@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Security.Principal;
+using System.Threading;
 using System.Windows.Forms;
 
 namespace Auto_Restart_Process
@@ -387,6 +388,8 @@ namespace Auto_Restart_Process
                                     HungTimePassed.Reset();
                                 }
                             }
+
+                            Thread.Sleep((int)numericUpDown1.Value);
                         }
 
                         Log("Process Died" + (checkBox1.Checked ? " - Restarting Soon" : "") + "!");
