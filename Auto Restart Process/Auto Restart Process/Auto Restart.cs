@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Security.Principal;
 using System.Threading;
 using System.Windows.Forms;
@@ -332,8 +333,7 @@ namespace Auto_Restart_Process
                 {
                     if (TimePassed.ElapsedMilliseconds >= (long)numericUpDown1.Value)
                     {
-                        var Processes = Process.GetProcessesByName((Path.GetFileName(textBox1.Text) ?? "UnknownFileName")
-                            .Replace((Path.GetExtension(textBox1.Text) ?? "UnknownExtension"), ""));
+                        var Processes = Process.GetProcessesByName((Path.GetFileName(textBox1.Text) ?? "UnknownFileName").Replace((Path.GetExtension(textBox1.Text) ?? "UnknownExtension"), "")).Where(o => Path.GetDirectoryName(o?.MainModule?.FileName) == Path.GetDirectoryName(textBox1.Text)).ToArray();
 
                         if (Processes.Length > 0)
                         {
@@ -368,6 +368,7 @@ namespace Auto_Restart_Process
                                 {
                                     HungTimePassed.Reset();
                                     Proc.Kill();
+                                    Log("Process Killed - Failed To Respond!");
                                     break;
                                 }
                             }
