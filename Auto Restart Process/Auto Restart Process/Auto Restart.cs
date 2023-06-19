@@ -1,4 +1,4 @@
-﻿using Libraries;
+using Libraries;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -7,9 +7,13 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using DiscordWebhook;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace Auto_Restart_Process
 {
@@ -36,22 +40,6 @@ namespace Auto_Restart_Process
                     try
                     {
                         Instance.checkBox1.Checked = value;
-                    }
-                    catch
-                    {
-
-                    }
-                }
-            }
-
-            public bool RunOnStartup
-            {
-                get => Instance.checkBox2.Checked;
-                set
-                {
-                    try
-                    {
-                        Instance.checkBox2.Checked = value;
                     }
                     catch
                     {
@@ -112,23 +100,70 @@ namespace Auto_Restart_Process
             else
             {
                 RestartWorker.CancelAsync();
+
+                foreach (var canceller in CancelTokens)
+                {
+                    canceller?.Cancel();
+                }
+
+                CancelTokens.Clear();
             }
+        }
+
+        [ComImport]
+        [Guid("00021401-0000-0000-C000-000000000046")]
+        internal class ShellLink
+        {
+        }
+
+        [ComImport]
+        [InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+        [Guid("000214F9-0000-0000-C000-000000000046")]
+        internal interface IShellLink
+        {
+            void GetPath([Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszFile, int cchMaxPath, out IntPtr pfd, int fFlags);
+            void GetIDList(out IntPtr ppidl);
+            void SetIDList(IntPtr pidl);
+            void GetDescription([Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszName, int cchMaxName);
+            void SetDescription([MarshalAs(UnmanagedType.LPWStr)] string pszName);
+            void GetWorkingDirectory([Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszDir, int cchMaxPath);
+            void SetWorkingDirectory([MarshalAs(UnmanagedType.LPWStr)] string pszDir);
+            void GetArguments([Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszArgs, int cchMaxPath);
+            void SetArguments([MarshalAs(UnmanagedType.LPWStr)] string pszArgs);
+            void GetHotkey(out short pwHotkey);
+            void SetHotkey(short wHotkey);
+            void GetShowCmd(out int piShowCmd);
+            void SetShowCmd(int iShowCmd);
+            void GetIconLocation([Out, MarshalAs(UnmanagedType.LPWStr)] StringBuilder pszIconPath, int cchIconPath, out int piIcon);
+            void SetIconLocation([MarshalAs(UnmanagedType.LPWStr)] string pszIconPath, int iIcon);
+            void SetRelativePath([MarshalAs(UnmanagedType.LPWStr)] string pszPathRel, int dwReserved);
+            void Resolve(IntPtr hwnd, int fFlags);
+            void SetPath([MarshalAs(UnmanagedType.LPWStr)] string pszFile);
         }
 
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
-            var rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
+            var dir = Environment.GetFolderPath(Environment.SpecialFolder.Startup);
 
-            if (rk != null)
+            if (checkBox2.Checked)
             {
-                if (checkBox2.Checked)
-                {
-                    rk.SetValue(Application.ExecutablePath, "\"" + Application.ExecutablePath + "\"");
-                }
-                else
-                {
-                    rk.DeleteValue(Application.ExecutablePath, false);
-                }
+                var link = (IShellLink)new ShellLink();
+
+                // setup shortcut information
+                link.SetDescription("Auto Restart Process AutoStart");
+                link.SetPath(Application.ExecutablePath);
+
+                // save it
+                var file = (IPersistFile)link;
+                file.Save(Path.Combine(dir, "AutoRestartProcess.lnk"), false);
+
+                Log($"Saved Shortcut To: {dir}");
+            }
+            else
+            {
+                File.Delete(Path.Combine(dir, "AutoRestartProcess.lnk"));
+
+                Log($"Deleted Shortcut: {Path.Combine(dir, "AutoRestartProcess.lnk")}");
             }
         }
 
@@ -154,6 +189,8 @@ namespace Auto_Restart_Process
             }
         }
 
+        private List<CancellationTokenSource> CancelTokens = new List<CancellationTokenSource>();
+
         private void RestartWorker_DoWork(object sender, DoWorkEventArgs e)
         {
             Log("RestartWorker Init!");
@@ -168,6 +205,9 @@ namespace Auto_Restart_Process
                         return;
                     }
 
+                    var canceller = new CancellationTokenSource();
+                    CancelTokens.Add(canceller);
+
                     Task.Run(() =>
                     {
                         if (!program.Value.TimePassed.IsRunning)
@@ -177,9 +217,8 @@ namespace Auto_Restart_Process
 
                         while (checkBox1.Checked)
                         {
-                            if (e.Cancel)
+                            if (e.Cancel || canceller.IsCancellationRequested || canceller.Token.IsCancellationRequested)
                             {
-                                Log("Cancelled.");
                                 return;
                             }
 
@@ -226,7 +265,7 @@ namespace Auto_Restart_Process
                                         {
                                             program.Value.HungTimePassed.Reset();
                                             program.Value.Proc.Kill();
-                                            Log($"{Path.GetFileNameWithoutExtension(program.Key.MaintainThis)} Killed - Failed To Respond!");
+                                            Log($"{Path.GetFileNameWithoutExtension(program.Key.MaintainThis)} Killed - Failed To Respond!", program.Value.webHook, program.Key.WebhookPrefix);
                                             break;
                                         }
                                     }
@@ -249,11 +288,16 @@ namespace Auto_Restart_Process
                                     }
                                 }
 
+                                if (e.Cancel || canceller.IsCancellationRequested || canceller.Token.IsCancellationRequested)
+                                {
+                                    return;
+                                }
+
                                 Log($"{Path.GetFileNameWithoutExtension(program.Key.MaintainThis)} Died" + (checkBox1.Checked ? " - Restarting Soon" : "") + "!");
                                 program.Value.TimePassed.Restart();
                             }
                         }
-                    });
+                    }, canceller.Token);
                 }
             }
             catch (Exception ex)
@@ -300,6 +344,13 @@ namespace Auto_Restart_Process
 
                 RestartWorker.CancelAsync();
 
+                foreach (var canceller in CancelTokens)
+                {
+                    canceller?.Cancel();
+                }
+
+                CancelTokens.Clear();
+
                 if (checkBox1.Checked)
                 {
                     RestartWorker.RunWorkerAsync();
@@ -323,6 +374,8 @@ namespace Auto_Restart_Process
 
         private void AutoRestartForm_Load(object sender, EventArgs e)
         {
+            checkBox2.Checked = File.Exists(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Startup), "AutoRestartProcess.lnk"));
+
             Config = new ConfigLib<Configuration>(Environment.CurrentDirectory + "\\RestarterConfig.json");
 
             dataGridView1.DataSource = Entries;
@@ -373,9 +426,91 @@ namespace Auto_Restart_Process
 
             RestartWorker.CancelAsync();
 
+            foreach (var canceller in CancelTokens)
+            {
+                canceller?.Cancel();
+            }
+
+            CancelTokens.Clear();
+
             if (checkBox1.Checked)
             {
                 RestartWorker.RunWorkerAsync();
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            using var popup = new Setup();
+
+            var procname = dataGridView1.SelectedRows[0].Cells[0].Value.ToString();
+            var restarts = int.Parse(dataGridView1.SelectedRows[0].Cells[1].Value.ToString());
+
+            var program = Config.InternalConfig.ProgramsToRestart.First(o => Path.GetFileNameWithoutExtension(o.MaintainThis) == procname && TempDataStorage[o].RestartCount == restarts);
+            var programIndex = Config.InternalConfig.ProgramsToRestart.IndexOf(program);
+
+            popup.MaintainThis.Text = program.MaintainThis;
+            popup.Arguments.Text = program.Arguments;
+            popup.CreateNoWindow.Checked = program.CreateNoWindow;
+            popup.Interval.Value = program.Interval;
+            popup.KillIfNotResponding.Checked = program.KillIfNotResponding;
+            popup.NotRespondingTime.Value = program.NotRespondingTime;
+            popup.WindowStartState.SelectedIndex = program.WindowStartState;
+            popup.WebhookPrefix.Text = program.WebhookPrefix;
+            popup.Webhook.Text = program.Webhook;
+
+            if (popup.ShowDialog() == DialogResult.OK)
+            {
+                // Remove Temp
+                TempDataStorage.Remove(program);
+
+                var entry = new ProgramToRestart
+                {
+                    MaintainThis = popup.MaintainThis.Text,
+                    Arguments = popup.Arguments.Text,
+                    CreateNoWindow = popup.CreateNoWindow.Checked,
+                    Interval = popup.Interval.Value,
+                    KillIfNotResponding = popup.KillIfNotResponding.Checked,
+                    NotRespondingTime = popup.NotRespondingTime.Value,
+                    WindowStartState = popup.WindowStartState.SelectedIndex,
+                    WebhookPrefix = popup.WebhookPrefix.Text,
+                    Webhook = popup.Webhook.Text
+                };
+
+                Config.InternalConfig.ProgramsToRestart[programIndex] = entry;
+
+                var data = new TempData();
+
+                data.RestartCount = restarts;
+
+                if (!string.IsNullOrEmpty(entry.Webhook))
+                {
+                    data.webHook = new Webhook(entry.Webhook);
+                }
+
+                TempDataStorage.Add(entry, data);
+
+                var entryindex = Entries.ToList().FindIndex(o => o.ProcessName == Path.GetFileNameWithoutExtension(program.MaintainThis));
+
+                var gridentry = Entries[entryindex];
+
+                gridentry.ProcessName = Path.GetFileNameWithoutExtension(popup.MaintainThis.Text);
+
+                dataGridView1.UpdateCellValue(0, entryindex);
+
+                RestartWorker.CancelAsync();
+
+                foreach (var canceller in CancelTokens)
+                {
+                    canceller?.Cancel();
+                }
+
+                CancelTokens.Clear();
+
+                if (checkBox1.Checked)
+                {
+                    RestartWorker.RunWorkerAsync();
+                }
             }
         }
     }
