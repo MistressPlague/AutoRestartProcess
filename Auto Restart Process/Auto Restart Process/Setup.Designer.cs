@@ -1,4 +1,4 @@
-﻿namespace Auto_Restart_Process
+namespace Auto_Restart_Process
 {
     partial class Setup
     {
