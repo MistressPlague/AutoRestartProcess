@@ -1,4 +1,4 @@
-namespace Auto_Restart_Process
+﻿namespace Auto_Restart_Process
 {
     partial class AutoRestartForm
     {
@@ -28,47 +28,46 @@ namespace Auto_Restart_Process
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AutoRestartForm));
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
-            this.RestartWorker = new System.ComponentModel.BackgroundWorker();
+            this.AutoRestartCheckBox = new System.Windows.Forms.CheckBox();
+            this.RunOnStartupCheckBox = new System.Windows.Forms.CheckBox();
             this.FilePopup = new System.Windows.Forms.OpenFileDialog();
             this.LogBox = new System.Windows.Forms.TextBox();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.ProgramList = new System.Windows.Forms.DataGridView();
+            this.AddButton = new System.Windows.Forms.Button();
+            this.RemoveButton = new System.Windows.Forms.Button();
+            this.EditButton = new System.Windows.Forms.Button();
+            this.NotificationAreaIcon = new System.Windows.Forms.NotifyIcon(this.components);
+            this.NotificationAreaRightClickMenu = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            ((System.ComponentModel.ISupportInitialize)(this.ProgramList)).BeginInit();
+            this.NotificationAreaRightClickMenu.SuspendLayout();
             this.SuspendLayout();
             // 
-            // checkBox1
+            // AutoRestartCheckBox
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.checkBox1.Location = new System.Drawing.Point(10, 12);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(85, 17);
-            this.checkBox1.TabIndex = 1;
-            this.checkBox1.Text = "Auto Restart";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            this.AutoRestartCheckBox.AutoSize = true;
+            this.AutoRestartCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.AutoRestartCheckBox.Location = new System.Drawing.Point(10, 12);
+            this.AutoRestartCheckBox.Name = "AutoRestartCheckBox";
+            this.AutoRestartCheckBox.Size = new System.Drawing.Size(85, 17);
+            this.AutoRestartCheckBox.TabIndex = 1;
+            this.AutoRestartCheckBox.Text = "Auto Restart";
+            this.AutoRestartCheckBox.UseVisualStyleBackColor = true;
+            this.AutoRestartCheckBox.CheckedChanged += new System.EventHandler(this.AutoRestartCheckBox_CheckedChanged);
             // 
-            // checkBox2
+            // RunOnStartupCheckBox
             // 
-            this.checkBox2.AutoSize = true;
-            this.checkBox2.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.checkBox2.Location = new System.Drawing.Point(10, 35);
-            this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new System.Drawing.Size(100, 17);
-            this.checkBox2.TabIndex = 8;
-            this.checkBox2.Text = "Run On Startup";
-            this.checkBox2.UseVisualStyleBackColor = true;
-            this.checkBox2.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
-            // 
-            // RestartWorker
-            // 
-            this.RestartWorker.WorkerSupportsCancellation = true;
-            this.RestartWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.RestartWorker_DoWork);
+            this.RunOnStartupCheckBox.AutoSize = true;
+            this.RunOnStartupCheckBox.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.RunOnStartupCheckBox.Location = new System.Drawing.Point(10, 35);
+            this.RunOnStartupCheckBox.Name = "RunOnStartupCheckBox";
+            this.RunOnStartupCheckBox.Size = new System.Drawing.Size(100, 17);
+            this.RunOnStartupCheckBox.TabIndex = 8;
+            this.RunOnStartupCheckBox.Text = "Run On Startup";
+            this.RunOnStartupCheckBox.UseVisualStyleBackColor = true;
+            this.RunOnStartupCheckBox.CheckedChanged += new System.EventHandler(this.RunOnStartupCheckBox_CheckedChanged);
             // 
             // FilePopup
             // 
@@ -85,58 +84,85 @@ namespace Auto_Restart_Process
             this.LogBox.Size = new System.Drawing.Size(584, 155);
             this.LogBox.TabIndex = 12;
             // 
-            // dataGridView1
+            // ProgramList
             // 
-            this.dataGridView1.AllowUserToAddRows = false;
-            this.dataGridView1.AllowUserToDeleteRows = false;
-            this.dataGridView1.AllowUserToResizeRows = false;
-            this.dataGridView1.BackgroundColor = System.Drawing.Color.Black;
-            this.dataGridView1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(10, 87);
-            this.dataGridView1.MultiSelect = false;
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.ReadOnly = true;
-            this.dataGridView1.RowHeadersVisible = false;
-            this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(584, 166);
-            this.dataGridView1.TabIndex = 16;
+            this.ProgramList.AllowUserToAddRows = false;
+            this.ProgramList.AllowUserToDeleteRows = false;
+            this.ProgramList.AllowUserToResizeRows = false;
+            this.ProgramList.BackgroundColor = System.Drawing.Color.Black;
+            this.ProgramList.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.ProgramList.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.ProgramList.Location = new System.Drawing.Point(10, 87);
+            this.ProgramList.MultiSelect = false;
+            this.ProgramList.Name = "ProgramList";
+            this.ProgramList.ReadOnly = true;
+            this.ProgramList.RowHeadersVisible = false;
+            this.ProgramList.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.ProgramList.Size = new System.Drawing.Size(584, 166);
+            this.ProgramList.TabIndex = 16;
             // 
-            // button2
+            // AddButton
             // 
-            this.button2.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.button2.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button2.Location = new System.Drawing.Point(502, 58);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(92, 23);
-            this.button2.TabIndex = 17;
-            this.button2.Text = "Add";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
+            this.AddButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.AddButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.AddButton.Location = new System.Drawing.Point(502, 58);
+            this.AddButton.Name = "AddButton";
+            this.AddButton.Size = new System.Drawing.Size(92, 23);
+            this.AddButton.TabIndex = 17;
+            this.AddButton.Text = "Add";
+            this.AddButton.UseVisualStyleBackColor = true;
+            this.AddButton.Click += new System.EventHandler(this.AddButton_Click);
             // 
-            // button1
+            // RemoveButton
             // 
-            this.button1.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.button1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button1.Location = new System.Drawing.Point(10, 58);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(92, 23);
-            this.button1.TabIndex = 18;
-            this.button1.Text = "Remove";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.RemoveButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.RemoveButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.RemoveButton.Location = new System.Drawing.Point(10, 58);
+            this.RemoveButton.Name = "RemoveButton";
+            this.RemoveButton.Size = new System.Drawing.Size(92, 23);
+            this.RemoveButton.TabIndex = 18;
+            this.RemoveButton.Text = "Remove";
+            this.RemoveButton.UseVisualStyleBackColor = true;
+            this.RemoveButton.Click += new System.EventHandler(this.RemoveButton_Click);
             // 
-            // button3
+            // EditButton
             // 
-            this.button3.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.button3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.button3.Location = new System.Drawing.Point(404, 58);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(92, 23);
-            this.button3.TabIndex = 19;
-            this.button3.Text = "Edit";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.EditButton.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.EditButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.EditButton.Location = new System.Drawing.Point(404, 58);
+            this.EditButton.Name = "EditButton";
+            this.EditButton.Size = new System.Drawing.Size(92, 23);
+            this.EditButton.TabIndex = 19;
+            this.EditButton.Text = "Edit";
+            this.EditButton.UseVisualStyleBackColor = true;
+            this.EditButton.Click += new System.EventHandler(this.EditButton_Click);
+            // 
+            // NotificationAreaIcon
+            // 
+            this.NotificationAreaIcon.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+            this.NotificationAreaIcon.BalloonTipText = "Right Click To Exit";
+            this.NotificationAreaIcon.BalloonTipTitle = "Auto Restart Process";
+            this.NotificationAreaIcon.ContextMenuStrip = this.NotificationAreaRightClickMenu;
+            this.NotificationAreaIcon.Icon = ((System.Drawing.Icon)(resources.GetObject("NotificationAreaIcon.Icon")));
+            this.NotificationAreaIcon.Text = "Auto Restart Process";
+            this.NotificationAreaIcon.DoubleClick += new System.EventHandler(this.NotificationAreaIcon_DoubleClick);
+            // 
+            // NotificationAreaRightClickMenu
+            // 
+            this.NotificationAreaRightClickMenu.BackColor = System.Drawing.Color.Black;
+            this.NotificationAreaRightClickMenu.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.exitToolStripMenuItem});
+            this.NotificationAreaRightClickMenu.Name = "NotificationAreaRightClickMenu";
+            this.NotificationAreaRightClickMenu.ShowImageMargin = false;
+            this.NotificationAreaRightClickMenu.Size = new System.Drawing.Size(69, 26);
+            // 
+            // exitToolStripMenuItem
+            // 
+            this.exitToolStripMenuItem.ForeColor = System.Drawing.Color.Magenta;
+            this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(68, 22);
+            this.exitToolStripMenuItem.Text = "Exit";
+            this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
             // AutoRestartForm
             // 
@@ -144,38 +170,41 @@ namespace Auto_Restart_Process
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
             this.ClientSize = new System.Drawing.Size(604, 427);
-            this.Controls.Add(this.button3);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.dataGridView1);
+            this.Controls.Add(this.EditButton);
+            this.Controls.Add(this.RemoveButton);
+            this.Controls.Add(this.AddButton);
+            this.Controls.Add(this.ProgramList);
             this.Controls.Add(this.LogBox);
-            this.Controls.Add(this.checkBox2);
-            this.Controls.Add(this.checkBox1);
+            this.Controls.Add(this.RunOnStartupCheckBox);
+            this.Controls.Add(this.AutoRestartCheckBox);
             this.ForeColor = System.Drawing.Color.Magenta;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.Name = "AutoRestartForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Auto Restart Process";
-            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.AutoRestartForm_FormClosed);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AutoRestartForm_FormClosing);
             this.Load += new System.EventHandler(this.AutoRestartForm_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ProgramList)).EndInit();
+            this.NotificationAreaRightClickMenu.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-        private System.Windows.Forms.CheckBox checkBox1;
-        private System.Windows.Forms.CheckBox checkBox2;
-        private System.ComponentModel.BackgroundWorker RestartWorker;
+        private System.Windows.Forms.CheckBox AutoRestartCheckBox;
+        private System.Windows.Forms.CheckBox RunOnStartupCheckBox;
         private System.Windows.Forms.OpenFileDialog FilePopup;
         private System.Windows.Forms.TextBox LogBox;
-        private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.DataGridView ProgramList;
+        private System.Windows.Forms.Button AddButton;
+        private System.Windows.Forms.Button RemoveButton;
+        private System.Windows.Forms.Button EditButton;
+        private System.Windows.Forms.NotifyIcon NotificationAreaIcon;
+        private System.Windows.Forms.ContextMenuStrip NotificationAreaRightClickMenu;
+        private System.Windows.Forms.ToolStripMenuItem exitToolStripMenuItem;
     }
 }
 
