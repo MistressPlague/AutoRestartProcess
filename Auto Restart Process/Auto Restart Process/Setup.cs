@@ -19,6 +19,12 @@ namespace Auto_Restart_Process
 
         private void ConfirmButton_Click(object sender, EventArgs e)
         {
+            if (string.IsNullOrEmpty(MaintainThis.Text))
+            {
+                MessageBox.Show("Please Choose A Program First!", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             DialogResult = DialogResult.OK;
         }
 

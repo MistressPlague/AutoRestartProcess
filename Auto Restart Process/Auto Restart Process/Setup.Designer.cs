@@ -30,9 +30,17 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Setup));
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.KillAfterTime = new System.Windows.Forms.NumericUpDown();
+            this.KillAfter = new System.Windows.Forms.CheckBox();
+            this.WebhookPrefix = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.Webhook = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.NotRespondingTime = new System.Windows.Forms.NumericUpDown();
             this.KillIfNotResponding = new System.Windows.Forms.CheckBox();
+            this.Interval = new System.Windows.Forms.NumericUpDown();
             this.label1 = new System.Windows.Forms.Label();
             this.WindowStartState = new System.Windows.Forms.ComboBox();
             this.MaintainThis = new System.Windows.Forms.TextBox();
@@ -42,18 +50,19 @@
             this.BrowseButton = new System.Windows.Forms.Button();
             this.Arguments = new System.Windows.Forms.TextBox();
             this.ConfirmButton = new System.Windows.Forms.Button();
-            this.label3 = new System.Windows.Forms.Label();
-            this.Interval = new System.Windows.Forms.NumericUpDown();
-            this.label5 = new System.Windows.Forms.Label();
-            this.Webhook = new System.Windows.Forms.TextBox();
-            this.WebhookPrefix = new System.Windows.Forms.TextBox();
+            this.AutoMinimize = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.KillAfterTime)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.NotRespondingTime)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.Interval)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.AutoMinimize);
+            this.groupBox1.Controls.Add(this.label7);
+            this.groupBox1.Controls.Add(this.KillAfterTime);
+            this.groupBox1.Controls.Add(this.KillAfter);
             this.groupBox1.Controls.Add(this.WebhookPrefix);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.Webhook);
@@ -72,9 +81,92 @@
             this.groupBox1.Controls.Add(this.Arguments);
             this.groupBox1.Location = new System.Drawing.Point(12, 7);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(465, 193);
+            this.groupBox1.Size = new System.Drawing.Size(465, 233);
             this.groupBox1.TabIndex = 15;
             this.groupBox1.TabStop = false;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(6, 179);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(120, 13);
+            this.label7.TabIndex = 23;
+            this.label7.Text = "Kill After Time (Minutes):";
+            // 
+            // KillAfterTime
+            // 
+            this.KillAfterTime.BackColor = System.Drawing.Color.Black;
+            this.KillAfterTime.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.KillAfterTime.DecimalPlaces = 1;
+            this.KillAfterTime.ForeColor = System.Drawing.Color.Magenta;
+            this.KillAfterTime.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.KillAfterTime.Location = new System.Drawing.Point(143, 177);
+            this.KillAfterTime.Maximum = new decimal(new int[] {
+            999999999,
+            0,
+            0,
+            0});
+            this.KillAfterTime.Name = "KillAfterTime";
+            this.KillAfterTime.Size = new System.Drawing.Size(121, 20);
+            this.KillAfterTime.TabIndex = 24;
+            this.KillAfterTime.Value = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+            // 
+            // KillAfter
+            // 
+            this.KillAfter.AutoSize = true;
+            this.KillAfter.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.KillAfter.Location = new System.Drawing.Point(9, 159);
+            this.KillAfter.Name = "KillAfter";
+            this.KillAfter.Size = new System.Drawing.Size(94, 17);
+            this.KillAfter.TabIndex = 25;
+            this.KillAfter.Text = "Kill After Delay";
+            this.KillAfter.UseVisualStyleBackColor = true;
+            // 
+            // WebhookPrefix
+            // 
+            this.WebhookPrefix.BackColor = System.Drawing.Color.Black;
+            this.WebhookPrefix.ForeColor = System.Drawing.Color.Magenta;
+            this.WebhookPrefix.Location = new System.Drawing.Point(165, 203);
+            this.WebhookPrefix.Name = "WebhookPrefix";
+            this.WebhookPrefix.Size = new System.Drawing.Size(142, 20);
+            this.WebhookPrefix.TabIndex = 22;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(5, 207);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(151, 13);
+            this.label5.TabIndex = 21;
+            this.label5.Text = "Webhook Alerts: (Prefix | URL)";
+            this.label5.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // Webhook
+            // 
+            this.Webhook.BackColor = System.Drawing.Color.Black;
+            this.Webhook.ForeColor = System.Drawing.Color.Magenta;
+            this.Webhook.Location = new System.Drawing.Point(313, 203);
+            this.Webhook.Name = "Webhook";
+            this.Webhook.Size = new System.Drawing.Size(142, 20);
+            this.Webhook.TabIndex = 20;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 16);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(45, 13);
+            this.label3.TabIndex = 19;
+            this.label3.Text = "Interval:";
             // 
             // label6
             // 
@@ -115,6 +207,26 @@
             this.KillIfNotResponding.TabIndex = 16;
             this.KillIfNotResponding.Text = "Kill And Restart On Not Responding For Too Long";
             this.KillIfNotResponding.UseVisualStyleBackColor = true;
+            // 
+            // Interval
+            // 
+            this.Interval.BackColor = System.Drawing.Color.Black;
+            this.Interval.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.Interval.ForeColor = System.Drawing.Color.Magenta;
+            this.Interval.Location = new System.Drawing.Point(53, 13);
+            this.Interval.Maximum = new decimal(new int[] {
+            999999999,
+            0,
+            0,
+            0});
+            this.Interval.Name = "Interval";
+            this.Interval.Size = new System.Drawing.Size(69, 20);
+            this.Interval.TabIndex = 18;
+            this.Interval.Value = new decimal(new int[] {
+            1000,
+            0,
+            0,
+            0});
             // 
             // label1
             // 
@@ -209,7 +321,7 @@
             // 
             this.ConfirmButton.Cursor = System.Windows.Forms.Cursors.Hand;
             this.ConfirmButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ConfirmButton.Location = new System.Drawing.Point(12, 206);
+            this.ConfirmButton.Location = new System.Drawing.Point(12, 246);
             this.ConfirmButton.Name = "ConfirmButton";
             this.ConfirmButton.Size = new System.Drawing.Size(465, 40);
             this.ConfirmButton.TabIndex = 17;
@@ -217,69 +329,23 @@
             this.ConfirmButton.UseVisualStyleBackColor = true;
             this.ConfirmButton.Click += new System.EventHandler(this.ConfirmButton_Click);
             // 
-            // label3
+            // AutoMinimize
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(6, 16);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(45, 13);
-            this.label3.TabIndex = 19;
-            this.label3.Text = "Interval:";
-            // 
-            // Interval
-            // 
-            this.Interval.BackColor = System.Drawing.Color.Black;
-            this.Interval.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.Interval.ForeColor = System.Drawing.Color.Magenta;
-            this.Interval.Location = new System.Drawing.Point(53, 13);
-            this.Interval.Maximum = new decimal(new int[] {
-            999999999,
-            0,
-            0,
-            0});
-            this.Interval.Name = "Interval";
-            this.Interval.Size = new System.Drawing.Size(69, 20);
-            this.Interval.TabIndex = 18;
-            this.Interval.Value = new decimal(new int[] {
-            1000,
-            0,
-            0,
-            0});
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(6, 163);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(151, 13);
-            this.label5.TabIndex = 21;
-            this.label5.Text = "Webhook Alerts: (Prefix | URL)";
-            this.label5.TextAlign = System.Drawing.ContentAlignment.TopRight;
-            // 
-            // Webhook
-            // 
-            this.Webhook.BackColor = System.Drawing.Color.Black;
-            this.Webhook.ForeColor = System.Drawing.Color.Magenta;
-            this.Webhook.Location = new System.Drawing.Point(314, 159);
-            this.Webhook.Name = "Webhook";
-            this.Webhook.Size = new System.Drawing.Size(142, 20);
-            this.Webhook.TabIndex = 20;
-            // 
-            // WebhookPrefix
-            // 
-            this.WebhookPrefix.BackColor = System.Drawing.Color.Black;
-            this.WebhookPrefix.ForeColor = System.Drawing.Color.Magenta;
-            this.WebhookPrefix.Location = new System.Drawing.Point(166, 159);
-            this.WebhookPrefix.Name = "WebhookPrefix";
-            this.WebhookPrefix.Size = new System.Drawing.Size(142, 20);
-            this.WebhookPrefix.TabIndex = 22;
+            this.AutoMinimize.AutoSize = true;
+            this.AutoMinimize.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.AutoMinimize.Location = new System.Drawing.Point(364, 159);
+            this.AutoMinimize.Name = "AutoMinimize";
+            this.AutoMinimize.Size = new System.Drawing.Size(91, 17);
+            this.AutoMinimize.TabIndex = 26;
+            this.AutoMinimize.Text = "Auto-Minimize";
+            this.AutoMinimize.UseVisualStyleBackColor = true;
             // 
             // Setup
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(489, 261);
+            this.ClientSize = new System.Drawing.Size(489, 298);
             this.Controls.Add(this.ConfirmButton);
             this.Controls.Add(this.groupBox1);
             this.ForeColor = System.Drawing.Color.Magenta;
@@ -292,6 +358,7 @@
             this.Load += new System.EventHandler(this.Setup_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.KillAfterTime)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.NotRespondingTime)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.Interval)).EndInit();
             this.ResumeLayout(false);
@@ -318,5 +385,9 @@
         private System.Windows.Forms.Label label5;
         public System.Windows.Forms.TextBox Webhook;
         public System.Windows.Forms.TextBox WebhookPrefix;
+        private System.Windows.Forms.Label label7;
+        public System.Windows.Forms.NumericUpDown KillAfterTime;
+        public System.Windows.Forms.CheckBox KillAfter;
+        public System.Windows.Forms.CheckBox AutoMinimize;
     }
 }

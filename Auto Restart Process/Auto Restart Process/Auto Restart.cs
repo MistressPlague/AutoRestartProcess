@@ -14,6 +14,7 @@ using DiscordWebhook;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Runtime.InteropServices.ComTypes;
+using Newtonsoft.Json;
 using static Auto_Restart_Process.AutoRestartForm;
 
 namespace Auto_Restart_Process
@@ -61,8 +62,12 @@ namespace Auto_Restart_Process
             public int WindowStartState;
             public bool KillIfNotResponding;
             public decimal NotRespondingTime;
+            public bool KillAfter;
+            public decimal KillAfterTime;
             public string WebhookPrefix;
             public string Webhook;
+
+            public bool AutoMinimize;
         }
 
         private class TempData
@@ -73,8 +78,14 @@ namespace Auto_Restart_Process
             public int RestartCount = 0;
             //public Stopwatch TimePassed = new();
             public Stopwatch HungTimePassed = new();
+            public Stopwatch RunTimePassed = new();
+
+            public bool WasMinimized;
         }
 
+        /// <summary>
+        /// Temp Shit, What Is Handled
+        /// </summary>
         private Dictionary<ProgramToRestart, TempData> TempDataStorage = new();
 
         private void AutoRestartCheckBox_CheckedChanged(object sender, EventArgs e)
@@ -182,6 +193,7 @@ namespace Auto_Restart_Process
                 {
                     program.Value.Proc = Processes[0];
                     Log($"Existing {Path.GetFileNameWithoutExtension(program.Key.MaintainThis)} Found!");
+                    program.Value.RunTimePassed.Start();
                     goto AlreadyStarted;
                 }
 
@@ -216,17 +228,40 @@ namespace Auto_Restart_Process
                 WindowStyle = (ProcessWindowStyle)program.Key.WindowStartState
             };
 
+            program.Value.WasMinimized = false;
+
             program.Value.Proc = Process.Start(Info);
 
             Log($"{Path.GetFileNameWithoutExtension(program.Key.MaintainThis)} Started!");
 
+            program.Value.RunTimePassed.Start();
+
             return;
 
             AlreadyStarted:
+            if (program.Key.AutoMinimize && !program.Value.WasMinimized)
+            {
+                // Minimize
+                Log($"Minimizing {Path.GetFileNameWithoutExtension(program.Key.MaintainThis)}");
+                program.Value.WasMinimized = true;
+                Native.ShowWindow(program.Value.Proc.MainWindowHandle, Native.ShowWindowCommand.SW_MINIMIZE);
+            }
+
             if (program.Value.Proc.HasExited)
             {
                 program.Value.Proc = null;
                 goto RestartLog;
+            }
+
+            if (program.Key.KillAfter)
+            {
+                if (program.Value.RunTimePassed.ElapsedMilliseconds >= program.Key.KillAfterTime)
+                {
+                    program.Value.Proc.Kill();
+                    program.Value.Proc = null;
+                    Log($"{Path.GetFileNameWithoutExtension(program.Key.MaintainThis)} Killed - Kill After Time Passed!", program.Value.webHook, program.Key.WebhookPrefix);
+                    goto RestartLog;
+                }
             }
 
             if (program.Key.KillIfNotResponding)
@@ -253,7 +288,11 @@ namespace Auto_Restart_Process
             return;
 
             RestartLog:
+            program.Value.WasMinimized = false;
+
             Log($"{Path.GetFileNameWithoutExtension(program.Key.MaintainThis)} Died" + (AutoRestartCheckBox.Checked ? " - Restarting Soon" : "") + $"!\r\n{program.Key.GetLastErrorFromEventLog()}");
+
+            program.Value.RunTimePassed.Reset();
         }
 
         private void AddButton_Click(object sender, EventArgs e)
@@ -262,6 +301,8 @@ namespace Auto_Restart_Process
 
             if (popup.ShowDialog() == DialogResult.OK)
             {
+                StopAllTimers();
+
                 var entry = new ProgramToRestart
                 {
                     MaintainThis = popup.MaintainThis.Text,
@@ -270,9 +311,12 @@ namespace Auto_Restart_Process
                     Interval = popup.Interval.Value,
                     KillIfNotResponding = popup.KillIfNotResponding.Checked,
                     NotRespondingTime = popup.NotRespondingTime.Value,
+                    KillAfter = popup.KillAfter.Checked,
+                    KillAfterTime = popup.KillAfterTime.Value * 60000,
                     WindowStartState = popup.WindowStartState.SelectedIndex,
                     WebhookPrefix = popup.WebhookPrefix.Text,
-                    Webhook = popup.Webhook.Text
+                    Webhook = popup.Webhook.Text,
+                    AutoMinimize = popup.AutoMinimize.Checked
                 };
 
                 Config.InternalConfig.ProgramsToRestart.Add(entry);
@@ -291,8 +335,6 @@ namespace Auto_Restart_Process
                     ProcessName = Path.GetFileNameWithoutExtension(popup.MaintainThis.Text),
                     RestartCount = 0
                 });
-
-                StopAllTimers();
 
                 if (AutoRestartCheckBox.Checked)
                 {
@@ -313,6 +355,9 @@ namespace Auto_Restart_Process
             public string LastRestart { get; set; }
         }
 
+        /// <summary>
+        /// UI
+        /// </summary>
         public BindingList<Entry> Entries = new();
 
         private void AutoRestartForm_Load(object sender, EventArgs e)
@@ -358,16 +403,20 @@ namespace Auto_Restart_Process
 
         private void RemoveButton_Click(object sender, EventArgs e)
         {
+            StopAllTimers();
+
             var procname = ProgramList.SelectedRows[0].Cells[0].Value.ToString();
             var restarts = int.Parse(ProgramList.SelectedRows[0].Cells[1].Value.ToString());
 
             var program = Config.InternalConfig.ProgramsToRestart.First(o => Path.GetFileNameWithoutExtension(o.MaintainThis) == procname && TempDataStorage[o].RestartCount == restarts);
 
-            TempDataStorage.Remove(program);
-            Entries.Remove(Entries.FirstOrDefault(o => o.ProcessName == procname && o.RestartCount == restarts));
-            Config.InternalConfig.ProgramsToRestart.Remove(program);
+            Log($"Removing: {Path.GetFileNameWithoutExtension(program.MaintainThis)}..");
 
-            StopAllTimers();
+            TempDataStorage.Remove(TempDataStorage.First(o => o.Key == program).Key);
+            Config.InternalConfig.ProgramsToRestart.Remove(program);
+            Entries.Remove(Entries.First(o => o.ProcessName == procname && o.RestartCount == restarts));
+
+            Log("Done.");
 
             if (AutoRestartCheckBox.Checked)
             {
@@ -391,21 +440,29 @@ namespace Auto_Restart_Process
             popup.Interval.Value = program.Interval;
             popup.KillIfNotResponding.Checked = program.KillIfNotResponding;
             popup.NotRespondingTime.Value = program.NotRespondingTime;
+            popup.KillAfter.Checked = program.KillAfter;
+            popup.KillAfterTime.Value = program.KillAfterTime / 60000;
             popup.WindowStartState.SelectedIndex = program.WindowStartState;
             popup.WebhookPrefix.Text = program.WebhookPrefix;
             popup.Webhook.Text = program.Webhook;
+            popup.AutoMinimize.Checked = program.AutoMinimize;
 
             if (popup.ShowDialog() == DialogResult.OK)
             {
+                StopAllTimers();
+
                 Config.InternalConfig.ProgramsToRestart[programIndex].MaintainThis = popup.MaintainThis.Text;
                 Config.InternalConfig.ProgramsToRestart[programIndex].Arguments = popup.Arguments.Text;
                 Config.InternalConfig.ProgramsToRestart[programIndex].CreateNoWindow = popup.CreateNoWindow.Checked;
                 Config.InternalConfig.ProgramsToRestart[programIndex].Interval = popup.Interval.Value;
                 Config.InternalConfig.ProgramsToRestart[programIndex].KillIfNotResponding = popup.KillIfNotResponding.Checked;
                 Config.InternalConfig.ProgramsToRestart[programIndex].NotRespondingTime = popup.NotRespondingTime.Value;
+                Config.InternalConfig.ProgramsToRestart[programIndex].KillAfter = popup.KillAfter.Checked;
+                Config.InternalConfig.ProgramsToRestart[programIndex].KillAfterTime = popup.KillAfterTime.Value * 60000;
                 Config.InternalConfig.ProgramsToRestart[programIndex].WindowStartState = popup.WindowStartState.SelectedIndex;
                 Config.InternalConfig.ProgramsToRestart[programIndex].WebhookPrefix = popup.WebhookPrefix.Text;
                 Config.InternalConfig.ProgramsToRestart[programIndex].Webhook = popup.Webhook.Text;
+                Config.InternalConfig.ProgramsToRestart[programIndex].AutoMinimize = popup.AutoMinimize.Checked;
 
                 var data = TempDataStorage[Config.InternalConfig.ProgramsToRestart[programIndex]];
 
@@ -418,8 +475,6 @@ namespace Auto_Restart_Process
                 gridentry.ProcessName = Path.GetFileNameWithoutExtension(popup.MaintainThis.Text);
 
                 ProgramList.UpdateCellValue(0, entryindex);
-
-                StopAllTimers();
 
                 if (AutoRestartCheckBox.Checked)
                 {
